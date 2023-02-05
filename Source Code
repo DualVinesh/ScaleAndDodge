@@ -1,0 +1,252 @@
+// ScaleAndDodge.cpp 
+
+#include <iostream>
+#include<windows.h>
+#include<conio.h>
+#include<stdlib.h>
+#include<ctime>
+using namespace std;
+bool OppAppear[2] = {true,false};
+int test5;
+int newheadnum;
+int test2;
+int test3 = 0;
+int test4;
+int Oppheadnum = 0;
+int headnum = 0;
+bool Appear = false;
+bool newAppear = false;
+char test;
+int Growth[17];
+int OppGrowth[17];
+int currentYPos = 19;
+int OppcurrentYPos = 19;
+int height = 20;
+int width = 60;
+int Lefty = 19;
+int Leftx = 30;
+int Righty = 19;
+int Rightx = 31;
+int newLeftx = 58;
+int newRightx = 59;
+bool foreward = true;
+bool newforeward;
+bool gameOver = true;
+int arrowheadnum;
+int Leftarrow = 57;
+int Middlearrow = 58;
+int Rightarrow = 59;
+int score = -1;
+
+
+
+
+void Draw() {
+    for (int i = 1; i <= height; i++) {
+        for (int j = 1; j <= width; j++) {
+            if (j == Leftx and i == Lefty) {
+                std::cout << "[";
+            }
+            else if (j == Rightx and i == Righty) {
+                std::cout << "]";
+            }
+            else if (headnum > 0 and j == Leftx and i == Growth[18 - i]) {
+                std::cout << "[";
+            }
+            else if (headnum > 0 and j == Rightx and i == Growth[18 - i]) {
+                std::cout << "]";
+            }
+            else if (Appear and j == newLeftx and i == Lefty) {
+                std::cout << "[";
+            }
+            else if (Appear and j == newRightx and i == Lefty) {
+                std::cout << "]";
+            }
+            else if (Appear and j == newLeftx and i == OppGrowth[18 - i]) {
+                std::cout << "[";
+            }
+            else if (Appear and j == newRightx and i == OppGrowth[18 - i]) {
+                std::cout << "]";
+            }
+            else if (newAppear and j == Leftarrow and i == arrowheadnum) {
+                std::cout << "<";
+            }
+            else if (newAppear and j == Middlearrow and i == arrowheadnum) {
+                std::cout << "-";
+            }
+            else if (newAppear and j == Rightarrow and i == arrowheadnum) {
+                std::cout << "-";
+            }
+
+            else if (i == 1 or i == height or j == 1 or j == width) {
+                std::cout << "X";
+            }
+
+
+            else {
+                std::cout << " ";
+            }
+        }
+
+        std::cout << endl;
+    }
+    std::cout << "Score: ";
+    if (score > 0) {
+        std::cout << score;
+    }
+}
+
+
+
+
+
+
+void Move() {
+    if (foreward) {
+        Leftx++;
+        Rightx++;
+    }
+    else if (!foreward) {
+        Leftx--;
+        Rightx--;
+    }
+    if (Appear) {
+        newLeftx--;
+        newRightx--;
+    }
+    if (Rightx == 59) {
+        foreward = false;
+        score++;
+    }
+    else if (Leftx == 2) {
+        foreward = true;
+        if (OppAppear[test5] == true) {
+            Appear = true;
+        }
+        else {
+            newAppear = true;
+        }
+        test5 = rand() % 2;
+    }
+    if (newAppear and Leftarrow == 2) {
+        newAppear = false;
+        Leftarrow = 57;
+        Middlearrow = 58;
+        Rightarrow = 59;
+        arrowheadnum = rand() % 16 + 2;
+    }
+    if (newAppear) {
+        Leftarrow--;
+        Middlearrow--;
+        Rightarrow--;
+    }
+}
+
+
+
+
+void Grow() {
+    if (_kbhit()) {
+        test = _getch();
+        if (test == 'w' and headnum < 17) {
+            currentYPos--;
+            Growth[headnum] = currentYPos;
+            headnum++;
+        }
+
+
+        else if (test == 's' and headnum > 0) {
+            headnum--;
+            Growth[headnum] = ' ';
+            currentYPos++;
+        }
+    }
+
+}
+
+
+
+
+
+void OppGrow() {
+    if (Appear and test3 < 1) {
+        for (int i = 0; i < Oppheadnum; i++) {
+            OppcurrentYPos--;
+            OppGrowth[i] = OppcurrentYPos;
+        }
+        test3++;
+
+
+    }
+}
+
+
+
+
+
+void checkWinner() {
+    if (Appear and headnum > Oppheadnum and Leftx == newLeftx and Rightx == newRightx) {
+        newheadnum = headnum - Oppheadnum;
+        test4 = headnum;
+        for (int i = newheadnum; i < test4; i++) {
+            Growth[i] = ' ';
+            currentYPos++;
+            headnum--;
+        }
+        Appear = false;
+        newRightx = 59;
+        newLeftx = 58;
+        test3 = 0;
+        OppcurrentYPos = 19;
+        for (int i = 0; i < Oppheadnum; i++) {
+            OppGrowth[i] = ' ';
+        }
+        Oppheadnum = rand() % 17;
+    }
+
+    else if (Appear and Leftx == newLeftx and Rightx == newRightx and headnum <= Oppheadnum) {
+        gameOver = false;
+    }
+}
+
+
+
+
+
+
+void checkWinner2() {
+    if (newAppear and Leftarrow == Leftx and currentYPos > arrowheadnum) {
+
+    }
+    else if (newAppear and Leftx==Leftarrow and currentYPos <= arrowheadnum) {
+        gameOver = false;
+    }
+
+}
+
+
+
+
+
+
+
+int main() {
+    srand(time(0));
+    Oppheadnum = rand() % 17;
+    arrowheadnum = rand() % 16 + 2;
+    test5 = rand() % 2;
+    while (gameOver) {
+        SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), { 0,0 });
+        CONSOLE_CURSOR_INFO info;
+        info.dwSize = 100;
+        info.bVisible = false;
+        SetConsoleCursorInfo(GetStdHandle(STD_OUTPUT_HANDLE), &info);
+        Draw();
+        Move();
+        Grow();
+        OppGrow();
+        checkWinner();
+        checkWinner2();
+       
+    }
+}
